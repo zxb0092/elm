@@ -91,7 +91,7 @@ class OrdersServiceImplTest {
 
 
         when(ordersMapper.check(orders)).thenReturn(0);
-        when(ordersMapper.getCarts(1, 1)).thenReturn(Arrays.asList());
+        when(ordersMapper.getCarts(1, 1L)).thenReturn(Arrays.asList());
 
         // Execute test
         Integer orderId = ordersService.addOrders(orders);
