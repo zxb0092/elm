@@ -12,11 +12,21 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.Map;
 
+/**
+ * JWT 工具类，提供 token 的生成与解析功能。
+ * 使用 PBKDF2WithHmacSHA512 算法对原始密钥进行扩展，
+ * 再以 HS256 算法对 JWT 进行签名，token 有效期为 30 分钟。
+ */
 @Component
 public class JwtUtils {
     private String key = "zxb";
     private String extendedKey;
 
+    /**
+     * 构造方法。
+     * 使用 PBKDF2WithHmacSHA512 算法将短密钥 {@code key} 扩展为 512 位的密钥，
+     * 并将结果以 Base64 编码存储到 {@code extendedKey} 中，供后续签名/验签使用。
+     */
     public JwtUtils() {
         try {
             // 使用PBKDF2算法扩展密钥
@@ -30,7 +40,12 @@ public class JwtUtils {
     }
 
     /**
-     * 生成token
+     * 生成 JWT token。
+     * 将传入的键值对写入 Claims，设置签发时间和 30 分钟过期时间，
+     * 使用 HS256 算法和扩展密钥进行签名后返回紧凑格式的 token 字符串。
+     *
+     * @param map 需要写入 token 的自定义声明（如 userId、userName）
+     * @return 生成的 JWT token 字符串
      */
     public String createToken(Map<String, Object> map) {
         String token = Jwts.builder()
@@ -46,7 +61,11 @@ public class JwtUtils {
     }
 
     /**
-     * 解析token
+     * 解析 JWT token，获取其中的声明信息。
+     * 使用扩展密钥对 token 进行验签，若 token 无效或已过期则抛出异常。
+     *
+     * @param token 待解析的 JWT token 字符串
+     * @return token 中携带的 {@link Claims} 声明对象
      */
     public Claims parseToken(String token) {
         Claims claims = Jwts.parser().setSigningKey(extendedKey)
